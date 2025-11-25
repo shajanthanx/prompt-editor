@@ -33,9 +33,20 @@ npm install
 
 # Run development server
 npm run dev
+# OR if you have Node version issues:
+node node_modules/next/dist/bin/next dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) to view the app.
+
+## Building for Production
+
+```bash
+# Build static export
+npm run build
+# OR
+node node_modules/next/dist/bin/next build
+```
 
 ## Deployment
 
@@ -45,6 +56,11 @@ Deploy to GitHub Pages:
 npm run deploy
 ```
 
+This will:
+1. Build the static export
+2. Deploy to the `gh-pages` branch
+3. Make the site available at your GitHub Pages URL
+
 ## Tech Stack
 
 - **Framework**: Next.js 16
@@ -52,6 +68,22 @@ npm run deploy
 - **Styling**: Vanilla CSS with CSS Variables
 - **TypeScript**: Full type safety
 - **Storage**: Browser localStorage
+
+## Project Structure
+
+```
+prompter/
+├── app/
+│   ├── components/      # React components
+│   ├── data/           # Default templates & phrases
+│   ├── types/          # TypeScript interfaces
+│   ├── utils/          # Utility functions
+│   ├── globals.css     # Design system
+│   ├── layout.tsx      # Root layout
+│   └── page.tsx        # Main app
+├── public/             # Static assets
+└── package.json
+```
 
 ## License
 
