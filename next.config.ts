@@ -5,10 +5,11 @@ const isProd = process.env.NODE_ENV === 'production';
 const nextConfig: NextConfig = {
   output: 'export',
   basePath: isProd ? '/prompt-editor' : '',
-  assetPrefix: isProd ? '/prompt-editor/' : '',
   images: {
     unoptimized: true,
   },
+  // Ensure trailing slash for GitHub Pages
+  trailingSlash: true,
 };
 
 export default nextConfig;
