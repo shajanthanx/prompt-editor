@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Prompter - AI Prompt Crafting Studio
+
+A beautiful, user-friendly web application for designing, editing, and managing AI prompts. Built with Next.js and React.
+
+🔗 **Live Demo**: [https://shajanthanx.github.io/prompt-editor](https://shajanthanx.github.io/prompt-editor)
+
+## Features
+
+- 📝 **Spacious Editor**: Large editing area with auto-save, character/word count
+- 📚 **Template Library**: 10+ pre-built templates for common use cases
+- ⚡ **Power Phrases**: 25+ quick-insert snippets to enhance prompts
+- 💾 **Saved Prompts**: Save, search, and manage your prompt library
+- 🌓 **Theme Toggle**: Beautiful light and dark themes
+- 📥 **Export/Import**: Backup and restore all your data
+- 💿 **Offline First**: All data stored locally in browser
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 20.9.0 or higher
+- npm or yarn
+
+### Installation
 
 ```bash
+# Clone the repository
+git clone https://github.com/shajanthanx/prompt-editor.git
+cd prompt-editor
+
+# Install dependencies
+npm install
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deployment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Deploy to GitHub Pages:
 
-## Learn More
+```bash
+npm run deploy
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Tech Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Framework**: Next.js 16
+- **UI Library**: React 19
+- **Styling**: Vanilla CSS with CSS Variables
+- **TypeScript**: Full type safety
+- **Storage**: Browser localStorage
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## License
 
-## Deploy on Vercel
+MIT
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Author
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Built by [shajanthanx](https://github.com/shajanthanx)
