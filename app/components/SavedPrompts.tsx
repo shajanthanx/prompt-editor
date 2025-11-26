@@ -1,8 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Save, Trash2, Download, Search, Clock, ArrowRight } from 'lucide-react';
 import { Prompt } from '../types';
 import { getSavedPrompts, savePrompt, deletePrompt, exportAllData } from '../utils/storage';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 interface SavedPromptsProps {
     onPromptLoad: (content: string) => void;
@@ -89,129 +94,126 @@ export default function SavedPrompts({ onPromptLoad, currentContent }: SavedProm
     };
 
     return (
-        <div className="flex flex-col gap-md" style={{ height: '100%' }}>
+        <div className="flex flex-col h-full gap-4">
             {/* Header */}
             <div>
-                <div className="flex items-center justify-between" style={{ marginBottom: 'var(--spacing-sm)' }}>
-                    <h3 style={{ fontSize: '1.125rem' }}>💾 Saved Prompts</h3>
-                    <button
+                <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-semibold flex items-center gap-2">
+                        <Save className="h-5 w-5" /> Saved Prompts
+                    </h3>
+                    <Button
+                        size="icon"
                         onClick={() => setShowSaveDialog(!showSaveDialog)}
-                        className="btn btn-primary btn-icon"
                         title="Save current prompt"
                     >
-                        +
-                    </button>
+                        <Save className="h-4 w-4" />
+                    </Button>
                 </div>
-                <p className="text-xs text-muted">Your prompt library</p>
+                <p className="text-xs text-muted-foreground">Your prompt library</p>
             </div>
 
             {/* Save Dialog */}
             {showSaveDialog && (
-                <div className="card" style={{ padding: 'var(--spacing-md)' }}>
-                    <h4 style={{ fontSize: '0.875rem', marginBottom: 'var(--spacing-sm)' }}>Save Current Prompt</h4>
-                    <div className="flex flex-col gap-sm">
-                        <input
-                            type="text"
+                <Card>
+                    <CardHeader className="p-4 pb-2">
+                        <CardTitle className="text-sm">Save Current Prompt</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-4 pt-2 flex flex-col gap-2">
+                        <Input
                             placeholder="Prompt title"
                             value={promptTitle}
                             onChange={(e) => setPromptTitle(e.target.value)}
-                            style={{ padding: 'var(--spacing-sm)', fontSize: '0.875rem' }}
                             autoFocus
                         />
-                        <div className="flex gap-sm">
-                            <button onClick={handleSavePrompt} className="btn btn-primary" style={{ flex: 1 }}>
+                        <div className="flex gap-2 mt-2">
+                            <Button onClick={handleSavePrompt} className="flex-1">
                                 Save
-                            </button>
-                            <button onClick={() => setShowSaveDialog(false)} className="btn btn-secondary" style={{ flex: 1 }}>
+                            </Button>
+                            <Button variant="secondary" onClick={() => setShowSaveDialog(false)} className="flex-1">
                                 Cancel
-                            </button>
+                            </Button>
                         </div>
-                    </div>
-                </div>
+                    </CardContent>
+                </Card>
             )}
 
             {/* Search */}
-            <input
-                type="search"
-                placeholder="Search prompts..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{ padding: 'var(--spacing-sm)', fontSize: '0.875rem' }}
-            />
+            <div className="relative">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                    type="search"
+                    placeholder="Search prompts..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-9"
+                />
+            </div>
 
             {/* Prompts List */}
-            <div style={{
-                flex: 1,
-                overflowY: 'auto',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 'var(--spacing-sm)',
-            }}>
+            <div className="flex-1 overflow-y-auto flex flex-col gap-2 pr-1">
                 {filteredPrompts.length === 0 ? (
-                    <div className="card" style={{
-                        padding: 'var(--spacing-xl)',
-                        textAlign: 'center',
-                        color: 'var(--text-muted)',
-                    }}>
+                    <Card className="p-8 text-center text-muted-foreground border-dashed">
                         <p className="text-sm">
                             {searchQuery ? 'No prompts found' : 'No saved prompts yet'}
                         </p>
-                        <p className="text-xs" style={{ marginTop: 'var(--spacing-xs)' }}>
+                        <p className="text-xs mt-1">
                             {!searchQuery && 'Save your first prompt to get started'}
                         </p>
-                    </div>
+                    </Card>
                 ) : (
                     filteredPrompts.map(prompt => (
-                        <div
-                            key={prompt.id}
-                            className="card card-interactive"
-                            style={{ padding: 'var(--spacing-md)' }}
-                        >
-                            <div className="flex items-start justify-between gap-sm" style={{ marginBottom: 'var(--spacing-sm)' }}>
-                                <h4 className="truncate" style={{ fontSize: '0.875rem', fontWeight: 600, flex: 1 }}>
-                                    {prompt.title}
-                                </h4>
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleDeletePrompt(prompt.id);
-                                    }}
-                                    className="btn btn-ghost btn-icon"
-                                    style={{ padding: '0.25rem', fontSize: '0.75rem' }}
-                                    title="Delete prompt"
-                                >
-                                    🗑️
-                                </button>
-                            </div>
+                        <Card key={prompt.id} className="group hover:border-primary/50 transition-colors">
+                            <CardContent className="p-4">
+                                <div className="flex items-start justify-between gap-2 mb-2">
+                                    <h4 className="text-sm font-semibold truncate flex-1">
+                                        {prompt.title}
+                                    </h4>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDeletePrompt(prompt.id);
+                                        }}
+                                        title="Delete prompt"
+                                    >
+                                        <Trash2 className="h-3 w-3 text-destructive" />
+                                    </Button>
+                                </div>
 
-                            <p className="text-xs text-muted truncate" style={{ marginBottom: 'var(--spacing-sm)' }}>
-                                {prompt.content.substring(0, 100)}...
-                            </p>
+                                <p className="text-xs text-muted-foreground truncate mb-3">
+                                    {prompt.content.substring(0, 100)}...
+                                </p>
 
-                            <div className="flex items-center justify-between">
-                                <span className="text-xs text-muted">{formatDate(prompt.timestamp)}</span>
-                                <button
-                                    onClick={() => onPromptLoad(prompt.content)}
-                                    className="btn btn-secondary"
-                                    style={{ fontSize: '0.75rem', padding: '0.25rem 0.75rem' }}
-                                >
-                                    Load
-                                </button>
-                            </div>
-                        </div>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                                        <Clock className="h-3 w-3" /> {formatDate(prompt.timestamp)}
+                                    </span>
+                                    <Button
+                                        variant="secondary"
+                                        size="sm"
+                                        className="h-7 text-xs px-2"
+                                        onClick={() => onPromptLoad(prompt.content)}
+                                    >
+                                        Load <ArrowRight className="h-3 w-3 ml-1" />
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
                     ))
                 )}
             </div>
 
             {/* Export Button */}
             {prompts.length > 0 && (
-                <button
+                <Button
+                    variant="outline"
                     onClick={handleExportAll}
-                    className="btn btn-secondary"
-                    style={{ width: '100%' }}
+                    className="w-full"
                 >
-                    📥 Export All Data
-                </button>
+                    <Download className="h-4 w-4 mr-2" /> Export All Data
+                </Button>
             )}
         </div>
     );

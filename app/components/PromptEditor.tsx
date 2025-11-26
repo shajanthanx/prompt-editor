@@ -1,7 +1,12 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { Copy, Trash2, Download, Check, FileText, FileJson, FileCode } from 'lucide-react';
 import { saveCurrentPrompt, getCurrentPrompt } from '../utils/storage';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 interface PromptEditorProps {
     onPromptChange?: (content: string) => void;
@@ -13,6 +18,7 @@ export default function PromptEditor({ onPromptChange, initialContent = '' }: Pr
     const [charCount, setCharCount] = useState(0);
     const [wordCount, setWordCount] = useState(0);
     const [copied, setCopied] = useState(false);
+    const [showExportMenu, setShowExportMenu] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     useEffect(() => {
@@ -77,6 +83,7 @@ export default function PromptEditor({ onPromptChange, initialContent = '' }: Pr
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+        setShowExportMenu(false);
     };
 
     const insertAtCursor = (text: string) => {
@@ -105,114 +112,86 @@ export default function PromptEditor({ onPromptChange, initialContent = '' }: Pr
     }, [content]);
 
     return (
-        <div className="flex flex-col gap-md" style={{ height: '100%' }}>
+        <div className="flex flex-col h-full gap-4">
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>Prompt Editor</h2>
-                    <p className="text-sm text-muted">
+                    <h2 className="text-2xl font-semibold">Prompt Editor</h2>
+                    <p className="text-sm text-muted-foreground">
                         Craft and refine your AI prompts with ease
                     </p>
                 </div>
-                <div className="flex gap-sm">
-                    <button
+                <div className="flex gap-2">
+                    <Button
+                        variant="secondary"
+                        size="icon"
                         onClick={handleCopy}
-                        className="btn btn-secondary btn-icon"
                         title="Copy to clipboard"
                     >
-                        {copied ? '✓' : '📋'}
-                    </button>
-                    <button
+                        {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                    </Button>
+                    <Button
+                        variant="secondary"
+                        size="icon"
                         onClick={handleClear}
-                        className="btn btn-secondary btn-icon"
                         title="Clear editor"
                         disabled={!content}
                     >
-                        🗑️
-                    </button>
-                    <div style={{ position: 'relative' }}>
-                        <button className="btn btn-secondary" title="Export prompt">
-                            ⬇️ Export
-                        </button>
-                        <div
-                            className="export-menu"
-                            style={{
-                                position: 'absolute',
-                                top: '100%',
-                                right: 0,
-                                marginTop: '0.5rem',
-                                background: 'var(--bg-elevated)',
-                                border: '1px solid var(--border-color)',
-                                borderRadius: 'var(--radius-md)',
-                                padding: '0.5rem',
-                                display: 'none',
-                                flexDirection: 'column',
-                                gap: '0.25rem',
-                                minWidth: '120px',
-                                zIndex: 10,
-                            }}
-                            onMouseEnter={(e) => e.currentTarget.style.display = 'flex'}
+                        <Trash2 className="h-4 w-4" />
+                    </Button>
+                    <div className="relative">
+                        <Button
+                            variant="secondary"
+                            onClick={() => setShowExportMenu(!showExportMenu)}
+                            className="gap-2"
                         >
-                            <button onClick={() => handleExport('txt')} className="btn btn-ghost" style={{ justifyContent: 'flex-start' }}>
-                                .txt
-                            </button>
-                            <button onClick={() => handleExport('md')} className="btn btn-ghost" style={{ justifyContent: 'flex-start' }}>
-                                .md
-                            </button>
-                            <button onClick={() => handleExport('json')} className="btn btn-ghost" style={{ justifyContent: 'flex-start' }}>
-                                .json
-                            </button>
-                        </div>
+                            <Download className="h-4 w-4" /> Export
+                        </Button>
+
+                        {showExportMenu && (
+                            <Card className="absolute top-full right-0 mt-2 p-1 min-w-[120px] z-50 flex flex-col gap-1 shadow-lg">
+                                <Button variant="ghost" size="sm" onClick={() => handleExport('txt')} className="justify-start w-full">
+                                    <FileText className="h-3 w-3 mr-2" /> .txt
+                                </Button>
+                                <Button variant="ghost" size="sm" onClick={() => handleExport('md')} className="justify-start w-full">
+                                    <FileCode className="h-3 w-3 mr-2" /> .md
+                                </Button>
+                                <Button variant="ghost" size="sm" onClick={() => handleExport('json')} className="justify-start w-full">
+                                    <FileJson className="h-3 w-3 mr-2" /> .json
+                                </Button>
+                            </Card>
+                        )}
                     </div>
                 </div>
             </div>
 
             {/* Editor */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <textarea
+            <div className="flex-1 flex flex-col">
+                <Textarea
                     ref={textareaRef}
                     value={content}
                     onChange={handleChange}
-                    placeholder="Start crafting your prompt here...
-
-Tip: Use templates and power phrases from the sidebars to enhance your prompts!"
-                    style={{
-                        flex: 1,
-                        minHeight: '400px',
-                        fontSize: '0.95rem',
-                        lineHeight: '1.7',
-                        fontFamily: 'inherit',
-                    }}
+                    placeholder="Start crafting your prompt here...&#10;&#10;Tip: Use templates and power phrases from the sidebars to enhance your prompts!"
+                    className="flex-1 min-h-[400px] text-base leading-relaxed p-6 resize-none font-mono"
                 />
             </div>
 
             {/* Footer Stats */}
-            <div className="flex items-center justify-between" style={{
-                padding: 'var(--spacing-md)',
-                background: 'var(--bg-secondary)',
-                borderRadius: 'var(--radius-md)',
-            }}>
-                <div className="flex gap-lg">
-                    <div className="flex items-center gap-sm">
-                        <span className="text-sm text-muted">Characters:</span>
-                        <span className="text-sm" style={{ fontWeight: 500 }}>{charCount.toLocaleString()}</span>
+            <div className="flex items-center justify-between p-4 bg-secondary/50 rounded-lg">
+                <div className="flex gap-6">
+                    <div className="flex items-center gap-2">
+                        <span className="text-sm text-muted-foreground">Characters:</span>
+                        <span className="text-sm font-medium">{charCount.toLocaleString()}</span>
                     </div>
-                    <div className="flex items-center gap-sm">
-                        <span className="text-sm text-muted">Words:</span>
-                        <span className="text-sm" style={{ fontWeight: 500 }}>{wordCount.toLocaleString()}</span>
+                    <div className="flex items-center gap-2">
+                        <span className="text-sm text-muted-foreground">Words:</span>
+                        <span className="text-sm font-medium">{wordCount.toLocaleString()}</span>
                     </div>
                 </div>
-                <div className="text-xs text-muted">
-                    Auto-saved ✓
+                <div className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Check className="h-3 w-3" /> Auto-saved
                 </div>
             </div>
-
-            <style jsx>{`
-        .btn:hover + .export-menu,
-        .export-menu:hover {
-          display: flex !important;
-        }
-      `}</style>
         </div>
     );
 }

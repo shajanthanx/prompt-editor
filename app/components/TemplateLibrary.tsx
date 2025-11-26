@@ -1,9 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Plus, Trash2, FileText, Search } from 'lucide-react';
 import { Template } from '../types';
 import { defaultTemplates } from '../data/defaultTemplates';
 import { getCustomTemplates, saveTemplate, deleteTemplate } from '../utils/storage';
+import { Button } from '@/components/ui/button';
+import { Input, Textarea } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 interface TemplateLibraryProps {
     onTemplateSelect: (content: string) => void;
@@ -58,131 +63,121 @@ export default function TemplateLibrary({ onTemplateSelect }: TemplateLibraryPro
     };
 
     return (
-        <div className="flex flex-col gap-md" style={{ height: '100%' }}>
+        <div className="flex flex-col h-full gap-4">
             {/* Header */}
             <div>
-                <div className="flex items-center justify-between" style={{ marginBottom: 'var(--spacing-sm)' }}>
-                    <h3 style={{ fontSize: '1.125rem' }}>📝 Templates</h3>
-                    <button
+                <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-semibold flex items-center gap-2">
+                        <FileText className="h-5 w-5" /> Templates
+                    </h3>
+                    <Button
+                        size="icon"
                         onClick={() => setShowNewTemplate(!showNewTemplate)}
-                        className="btn btn-primary btn-icon"
                         title="Create new template"
                     >
-                        +
-                    </button>
+                        <Plus className="h-4 w-4" />
+                    </Button>
                 </div>
-                <p className="text-xs text-muted">Pre-built prompts for common tasks</p>
+                <p className="text-xs text-muted-foreground">Pre-built prompts for common tasks</p>
             </div>
 
             {/* New Template Form */}
             {showNewTemplate && (
-                <div className="card" style={{ padding: 'var(--spacing-md)' }}>
-                    <h4 style={{ fontSize: '0.875rem', marginBottom: 'var(--spacing-sm)' }}>New Template</h4>
-                    <div className="flex flex-col gap-sm">
-                        <input
-                            type="text"
+                <Card>
+                    <CardHeader className="p-4 pb-2">
+                        <CardTitle className="text-sm">New Template</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-4 pt-2 flex flex-col gap-2">
+                        <Input
                             placeholder="Template name"
                             value={newTemplate.name}
                             onChange={(e) => setNewTemplate({ ...newTemplate, name: e.target.value })}
-                            style={{ padding: 'var(--spacing-sm)', fontSize: '0.875rem' }}
                         />
-                        <input
-                            type="text"
+                        <Input
                             placeholder="Category (optional)"
                             value={newTemplate.category}
                             onChange={(e) => setNewTemplate({ ...newTemplate, category: e.target.value })}
-                            style={{ padding: 'var(--spacing-sm)', fontSize: '0.875rem' }}
                         />
-                        <textarea
+                        <Textarea
                             placeholder="Template content"
                             value={newTemplate.content}
                             onChange={(e) => setNewTemplate({ ...newTemplate, content: e.target.value })}
                             rows={4}
-                            style={{ padding: 'var(--spacing-sm)', fontSize: '0.875rem' }}
                         />
-                        <div className="flex gap-sm">
-                            <button onClick={handleSaveNewTemplate} className="btn btn-primary" style={{ flex: 1 }}>
+                        <div className="flex gap-2 mt-2">
+                            <Button onClick={handleSaveNewTemplate} className="flex-1">
                                 Save
-                            </button>
-                            <button onClick={() => setShowNewTemplate(false)} className="btn btn-secondary" style={{ flex: 1 }}>
+                            </Button>
+                            <Button variant="secondary" onClick={() => setShowNewTemplate(false)} className="flex-1">
                                 Cancel
-                            </button>
+                            </Button>
                         </div>
-                    </div>
-                </div>
+                    </CardContent>
+                </Card>
             )}
 
             {/* Category Filter */}
-            <div style={{
-                display: 'flex',
-                gap: 'var(--spacing-xs)',
-                flexWrap: 'wrap',
-            }}>
+            <div className="flex flex-wrap gap-1">
                 {categories.map(cat => (
-                    <button
+                    <Button
                         key={cat}
+                        variant={selectedCategory === cat ? "default" : "secondary"}
+                        size="sm"
                         onClick={() => setSelectedCategory(cat)}
-                        className={selectedCategory === cat ? 'badge badge-primary' : 'badge'}
-                        style={{
-                            cursor: 'pointer',
-                            background: selectedCategory === cat ? undefined : 'var(--bg-elevated)',
-                            color: selectedCategory === cat ? undefined : 'var(--text-secondary)',
-                        }}
+                        className="h-7 text-xs px-2"
                     >
                         {cat}
-                    </button>
+                    </Button>
                 ))}
             </div>
 
             {/* Templates List */}
-            <div style={{
-                flex: 1,
-                overflowY: 'auto',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 'var(--spacing-sm)',
-            }}>
+            <div className="flex-1 overflow-y-auto flex flex-col gap-2 pr-1">
                 {filteredTemplates.map(template => (
-                    <div
-                        key={template.id}
-                        className="card card-interactive"
-                        style={{ padding: 'var(--spacing-md)' }}
-                    >
-                        <div className="flex items-center justify-between" style={{ marginBottom: 'var(--spacing-xs)' }}>
-                            <h4 style={{ fontSize: '0.875rem', fontWeight: 600 }}>{template.name}</h4>
-                            {template.isCustom && (
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleDeleteTemplate(template.id);
-                                    }}
-                                    className="btn btn-ghost btn-icon"
-                                    style={{ padding: '0.25rem' }}
-                                    title="Delete template"
-                                >
-                                    🗑️
-                                </button>
+                    <Card key={template.id} className="group hover:border-primary/50 transition-colors">
+                        <CardContent className="p-4">
+                            <div className="flex items-center justify-between mb-2">
+                                <h4 className="text-sm font-semibold">{template.name}</h4>
+                                {template.isCustom && (
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDeleteTemplate(template.id);
+                                        }}
+                                        title="Delete template"
+                                    >
+                                        <Trash2 className="h-3 w-3 text-destructive" />
+                                    </Button>
+                                )}
+                            </div>
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-secondary-foreground font-medium">
+                                    {template.category}
+                                </span>
+                                {template.isCustom && (
+                                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-500/10 text-green-500 font-medium">
+                                        Custom
+                                    </span>
+                                )}
+                            </div>
+                            {template.description && (
+                                <p className="text-xs text-muted-foreground mb-3 line-clamp-2">
+                                    {template.description}
+                                </p>
                             )}
-                        </div>
-                        <div className="flex items-center gap-sm" style={{ marginBottom: 'var(--spacing-sm)' }}>
-                            <span className="badge" style={{ fontSize: '0.7rem' }}>{template.category}</span>
-                            {template.isCustom && (
-                                <span className="badge badge-success" style={{ fontSize: '0.7rem' }}>Custom</span>
-                            )}
-                        </div>
-                        {template.description && (
-                            <p className="text-xs text-muted" style={{ marginBottom: 'var(--spacing-sm)' }}>
-                                {template.description}
-                            </p>
-                        )}
-                        <button
-                            onClick={() => onTemplateSelect(template.content)}
-                            className="btn btn-secondary"
-                            style={{ width: '100%', fontSize: '0.8rem' }}
-                        >
-                            Use Template
-                        </button>
-                    </div>
+                            <Button
+                                variant="secondary"
+                                size="sm"
+                                className="w-full h-8 text-xs"
+                                onClick={() => onTemplateSelect(template.content)}
+                            >
+                                Use Template
+                            </Button>
+                        </CardContent>
+                    </Card>
                 ))}
             </div>
         </div>

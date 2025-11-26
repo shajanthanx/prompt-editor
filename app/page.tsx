@@ -1,11 +1,14 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
+import { Menu, Save, Sidebar, Moon, Sun, LayoutTemplate, Sparkles } from 'lucide-react';
 import PromptEditor from './components/PromptEditor';
 import TemplateLibrary from './components/TemplateLibrary';
 import PowerPhrases from './components/PowerPhrases';
 import SavedPrompts from './components/SavedPrompts';
 import ThemeToggle from './components/ThemeToggle';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 export default function Home() {
   const [currentPrompt, setCurrentPrompt] = useState('');
@@ -32,128 +35,93 @@ export default function Home() {
   };
 
   return (
-    <div style={{
-      display: 'flex',
-      height: '100vh',
-      overflow: 'hidden',
-      background: 'var(--bg-primary)',
-    }}>
+    <div className="flex h-screen overflow-hidden bg-background">
       {/* Left Sidebar */}
-      <div style={{
-        width: leftSidebarOpen ? '320px' : '0',
-        transition: 'width var(--transition-base)',
-        overflow: 'hidden',
-        borderRight: leftSidebarOpen ? '1px solid var(--border-color)' : 'none',
-        display: 'flex',
-        flexDirection: 'column',
-      }}>
-        {leftSidebarOpen && (
-          <div style={{
-            padding: 'var(--spacing-lg)',
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden',
-          }}>
-            {/* Tabs */}
-            <div style={{
-              display: 'flex',
-              gap: 'var(--spacing-xs)',
-              marginBottom: 'var(--spacing-lg)',
-              borderBottom: '1px solid var(--border-color)',
-            }}>
-              <button
-                onClick={() => setActiveLeftTab('templates')}
-                className="btn btn-ghost"
-                style={{
-                  borderRadius: 0,
-                  borderBottom: activeLeftTab === 'templates' ? '2px solid var(--accent-primary)' : '2px solid transparent',
-                  color: activeLeftTab === 'templates' ? 'var(--text-primary)' : 'var(--text-muted)',
-                }}
-              >
-                Templates
-              </button>
-              <button
-                onClick={() => setActiveLeftTab('phrases')}
-                className="btn btn-ghost"
-                style={{
-                  borderRadius: 0,
-                  borderBottom: activeLeftTab === 'phrases' ? '2px solid var(--accent-primary)' : '2px solid transparent',
-                  color: activeLeftTab === 'phrases' ? 'var(--text-primary)' : 'var(--text-muted)',
-                }}
-              >
-                Power Phrases
-              </button>
-            </div>
-
-            {/* Tab Content */}
-            <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-              {activeLeftTab === 'templates' ? (
-                <TemplateLibrary onTemplateSelect={handleTemplateSelect} />
-              ) : (
-                <PowerPhrases onPhraseSelect={handlePhraseSelect} />
-              )}
-            </div>
-          </div>
+      <div
+        className={cn(
+          "flex flex-col border-r transition-[width] duration-300 ease-in-out overflow-hidden",
+          leftSidebarOpen ? "w-80" : "w-0 border-r-0"
         )}
+      >
+        <div className="flex flex-col h-full p-4 overflow-hidden">
+          {/* Tabs */}
+          <div className="flex gap-1 mb-4 border-b">
+            <Button
+              variant="ghost"
+              onClick={() => setActiveLeftTab('templates')}
+              className={cn(
+                "rounded-none border-b-2 border-transparent px-4 pb-2 pt-1 hover:bg-transparent",
+                activeLeftTab === 'templates'
+                  ? "border-primary text-primary"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <LayoutTemplate className="w-4 h-4 mr-2" />
+              Templates
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => setActiveLeftTab('phrases')}
+              className={cn(
+                "rounded-none border-b-2 border-transparent px-4 pb-2 pt-1 hover:bg-transparent",
+                activeLeftTab === 'phrases'
+                  ? "border-primary text-primary"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <Sparkles className="w-4 h-4 mr-2" />
+              Phrases
+            </Button>
+          </div>
+
+          {/* Tab Content */}
+          <div className="flex-1 overflow-hidden flex flex-col">
+            {activeLeftTab === 'templates' ? (
+              <TemplateLibrary onTemplateSelect={handleTemplateSelect} />
+            ) : (
+              <PowerPhrases onPhraseSelect={handlePhraseSelect} />
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Main Content */}
-      <div style={{
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-      }}>
+      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         {/* Header */}
-        <header style={{
-          padding: 'var(--spacing-lg) var(--spacing-xl)',
-          borderBottom: '1px solid var(--border-color)',
-          background: 'var(--bg-secondary)',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
-              <button
-                onClick={() => setLeftSidebarOpen(!leftSidebarOpen)}
-                className="btn btn-ghost btn-icon"
-                title="Toggle left sidebar"
-              >
-                ☰
-              </button>
-              <div>
-                <h1 style={{
-                  fontSize: '1.75rem',
-                  background: 'var(--accent-gradient)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                }}>
-                  Prompter
-                </h1>
-                <p className="text-xs text-muted">AI Prompt Crafting Studio</p>
-              </div>
+        <header className="flex items-center justify-between px-6 py-4 border-b bg-card/50 backdrop-blur-sm">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setLeftSidebarOpen(!leftSidebarOpen)}
+              title="Toggle left sidebar"
+            >
+              <Sidebar className="w-5 h-5" />
+            </Button>
+            <div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                Prompter
+              </h1>
+              <p className="text-xs text-muted-foreground">AI Prompt Crafting Studio</p>
             </div>
+          </div>
 
-            <div style={{ display: 'flex', gap: 'var(--spacing-sm)', alignItems: 'center' }}>
-              <ThemeToggle />
-              <button
-                onClick={() => setRightSidebarOpen(!rightSidebarOpen)}
-                className="btn btn-ghost btn-icon"
-                title="Toggle saved prompts"
-              >
-                💾
-              </button>
-            </div>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setRightSidebarOpen(!rightSidebarOpen)}
+              title="Toggle saved prompts"
+            >
+              <Save className="w-5 h-5" />
+            </Button>
           </div>
         </header>
 
         {/* Editor */}
-        <main style={{
-          flex: 1,
-          padding: 'var(--spacing-xl)',
-          overflow: 'auto',
-        }}>
-          <div style={{ maxWidth: '1200px', margin: '0 auto', height: '100%' }}>
+        <main className="flex-1 overflow-auto p-6">
+          <div className="max-w-5xl mx-auto h-full">
             <PromptEditor
               onPromptChange={setCurrentPrompt}
               initialContent={currentPrompt}
@@ -163,26 +131,18 @@ export default function Home() {
       </div>
 
       {/* Right Sidebar */}
-      <div style={{
-        width: rightSidebarOpen ? '320px' : '0',
-        transition: 'width var(--transition-base)',
-        overflow: 'hidden',
-        borderLeft: rightSidebarOpen ? '1px solid var(--border-color)' : 'none',
-      }}>
-        {rightSidebarOpen && (
-          <div style={{
-            padding: 'var(--spacing-lg)',
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden',
-          }}>
-            <SavedPrompts
-              onPromptLoad={handlePromptLoad}
-              currentContent={currentPrompt}
-            />
-          </div>
+      <div
+        className={cn(
+          "transition-[width] duration-300 ease-in-out overflow-hidden border-l",
+          rightSidebarOpen ? "w-80" : "w-0 border-l-0"
         )}
+      >
+        <div className="flex flex-col h-full p-4 overflow-hidden">
+          <SavedPrompts
+            onPromptLoad={handlePromptLoad}
+            currentContent={currentPrompt}
+          />
+        </div>
       </div>
     </div>
   );

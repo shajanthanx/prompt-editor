@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Moon, Sun } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function ThemeToggle() {
     const [theme, setTheme] = useState<'light' | 'dark'>('dark');
@@ -32,22 +34,24 @@ export default function ThemeToggle() {
     // Prevent flash of unstyled content
     if (!mounted) {
         return (
-            <button className="btn btn-ghost btn-icon" disabled>
-                🌓
-            </button>
+            <Button variant="ghost" size="icon" disabled>
+                <Moon className="h-5 w-5" />
+            </Button>
         );
     }
 
     return (
-        <button
+        <Button
+            variant="ghost"
+            size="icon"
             onClick={toggleTheme}
-            className="btn btn-ghost btn-icon"
             title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-            style={{
-                fontSize: '1.25rem',
-            }}
         >
-            {theme === 'dark' ? '☀️' : '🌙'}
-        </button>
+            {theme === 'dark' ? (
+                <Sun className="h-5 w-5" />
+            ) : (
+                <Moon className="h-5 w-5" />
+            )}
+        </Button>
     );
 }
