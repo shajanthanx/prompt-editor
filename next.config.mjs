@@ -2,6 +2,7 @@
 const nextConfig = {
     output: 'export',
     basePath: '/prompt-editor',
+    assetPrefix: '/prompt-editor/',
     images: {
         unoptimized: true,
     },
