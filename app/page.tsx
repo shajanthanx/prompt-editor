@@ -1,149 +1,119 @@
 'use client';
 
-import { useState } from 'react';
-import { Menu, Save, Sidebar, Moon, Sun, LayoutTemplate, Sparkles } from 'lucide-react';
-import PromptEditor from './components/PromptEditor';
-import TemplateLibrary from './components/TemplateLibrary';
-import PowerPhrases from './components/PowerPhrases';
-import SavedPrompts from './components/SavedPrompts';
+import Link from 'next/link';
+import { LayoutTemplate, FileText, ArrowRight, Sparkles } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import ThemeToggle from './components/ThemeToggle';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
+const modules = [
+  {
+    title: 'Prompt Editor',
+    description: 'Craft, test and save your AI prompts with templates and power phrases.',
+    icon: LayoutTemplate,
+    href: '/prompt-editor',
+    color: 'from-blue-500 to-indigo-600',
+    tags: ['AI Tools', 'Text']
+  },
+  {
+    title: 'Markdown to PDF',
+    description: 'Convert markdown content to beautiful PDF documents with live preview.',
+    icon: FileText,
+    href: '/markdown-to-pdf',
+    color: 'from-purple-500 to-pink-600',
+    tags: ['Utilities', 'Docs']
+  }
+];
+
 export default function Home() {
-  const [currentPrompt, setCurrentPrompt] = useState('');
-  const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
-  const [rightSidebarOpen, setRightSidebarOpen] = useState(true);
-  const [activeLeftTab, setActiveLeftTab] = useState<'templates' | 'phrases'>('templates');
-
-  const handleTemplateSelect = (content: string) => {
-    setCurrentPrompt(content);
-  };
-
-  const handlePhraseSelect = (text: string) => {
-    // Insert at cursor position using the global function
-    if ((window as any).insertTextAtCursor) {
-      (window as any).insertTextAtCursor(text);
-    } else {
-      // Fallback: append to end
-      setCurrentPrompt(prev => prev + (prev ? '\n\n' : '') + text);
-    }
-  };
-
-  const handlePromptLoad = (content: string) => {
-    setCurrentPrompt(content);
-  };
-
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
-      {/* Left Sidebar */}
-      <div
-        className={cn(
-          "flex flex-col border-r transition-[width] duration-300 ease-in-out overflow-hidden",
-          leftSidebarOpen ? "w-80" : "w-0 border-r-0"
-        )}
-      >
-        <div className="flex flex-col h-full p-4 overflow-hidden">
-          {/* Tabs */}
-          <div className="flex gap-1 mb-4 border-b">
-            <Button
-              variant="ghost"
-              onClick={() => setActiveLeftTab('templates')}
-              className={cn(
-                "rounded-none border-b-2 border-transparent px-4 pb-2 pt-1 hover:bg-transparent",
-                activeLeftTab === 'templates'
-                  ? "border-primary text-primary"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <LayoutTemplate className="w-4 h-4 mr-2" />
-              Templates
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => setActiveLeftTab('phrases')}
-              className={cn(
-                "rounded-none border-b-2 border-transparent px-4 pb-2 pt-1 hover:bg-transparent",
-                activeLeftTab === 'phrases'
-                  ? "border-primary text-primary"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <Sparkles className="w-4 h-4 mr-2" />
-              Phrases
-            </Button>
-          </div>
-
-          {/* Tab Content */}
-          <div className="flex-1 overflow-hidden flex flex-col">
-            {activeLeftTab === 'templates' ? (
-              <TemplateLibrary onTemplateSelect={handleTemplateSelect} />
-            ) : (
-              <PowerPhrases onPhraseSelect={handlePhraseSelect} />
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-        {/* Header */}
-        <header className="flex items-center justify-between px-6 py-4 border-b bg-card/50 backdrop-blur-sm">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setLeftSidebarOpen(!leftSidebarOpen)}
-              title="Toggle left sidebar"
-            >
-              <Sidebar className="w-5 h-5" />
-            </Button>
-            <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                Prompter
-              </h1>
-              <p className="text-xs text-muted-foreground">AI Prompt Crafting Studio</p>
-            </div>
-          </div>
-
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* Header */}
+      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10 font-bold">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setRightSidebarOpen(!rightSidebarOpen)}
-              title="Toggle saved prompts"
-            >
-              <Save className="w-5 h-5" />
-            </Button>
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <h1 className="text-xl font-bold tracking-tight">Prompter <span className="text-primary text-[10px] ml-1 px-1.5 py-0.5 rounded-full border border-primary/20 bg-primary/10">v0.1.0</span></h1>
           </div>
-        </header>
-
-        {/* Editor */}
-        <main className="flex-1 overflow-auto p-6">
-          <div className="max-w-5xl mx-auto h-full">
-            <PromptEditor
-              onPromptChange={setCurrentPrompt}
-              initialContent={currentPrompt}
-            />
-          </div>
-        </main>
-      </div>
-
-      {/* Right Sidebar */}
-      <div
-        className={cn(
-          "transition-[width] duration-300 ease-in-out overflow-hidden border-l",
-          rightSidebarOpen ? "w-80" : "w-0 border-l-0"
-        )}
-      >
-        <div className="flex flex-col h-full p-4 overflow-hidden">
-          <SavedPrompts
-            onPromptLoad={handlePromptLoad}
-            currentContent={currentPrompt}
-          />
+          <ThemeToggle />
         </div>
-      </div>
+      </header>
+
+      {/* Hero Section */}
+      <main className="flex-1 max-w-7xl mx-auto px-6 py-12 w-full">
+        <div className="mb-12">
+          <h2 className="text-4xl font-extrabold mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+            Welcome to the Studio
+          </h2>
+          <p className="text-lg text-muted-foreground max-w-2xl">
+            Choose a tool to start your creative process. All tools are modular, scalable, and built for performance.
+          </p>
+        </div>
+
+        {/* Module Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {modules.map((module) => (
+            <Link key={module.href} href={module.href} className="group">
+              <Card className="h-full border-2 border-border/50 transition-all duration-300 group-hover:border-primary/50 group-hover:shadow-2xl group-hover:shadow-primary/10 group-hover:-translate-y-1 relative overflow-hidden flex flex-col">
+                <div className={cn(
+                  "absolute top-0 right-0 w-32 h-32 bg-gradient-to-br opacity-5 transition-opacity group-hover:opacity-10",
+                  module.color
+                )} />
+
+                <CardHeader className="flex-1">
+                  <div className={cn(
+                    "w-12 h-12 rounded-xl bg-gradient-to-br flex items-center justify-center text-white mb-4 shadow-lg",
+                    module.color
+                  )}>
+                    <module.icon className="w-6 h-6" />
+                  </div>
+                  <div className="flex items-center justify-between mb-2">
+                    <CardTitle className="text-xl group-hover:text-primary transition-colors">{module.title}</CardTitle>
+                    <ArrowRight className="w-5 h-5 text-muted-foreground -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300" />
+                  </div>
+                  <CardDescription className="text-sm leading-relaxed">
+                    {module.description}
+                  </CardDescription>
+                </CardHeader>
+
+                <CardContent className="pt-0">
+                  <div className="flex flex-wrap gap-2">
+                    {module.tags.map(tag => (
+                      <span key={tag} className="text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded bg-secondary text-secondary-foreground">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+
+          {/* Planned Modules Placeholder */}
+          <Card className="h-full border-2 border-dashed border-border flex flex-col items-center justify-center p-8 opacity-60">
+            <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center text-muted-foreground mb-4">
+              <Sparkles className="w-6 h-6" />
+            </div>
+            <CardTitle className="text-lg mb-1">More Coming Soon</CardTitle>
+            <CardDescription className="text-center">
+              New tools are being developed to enhance your workflow.
+            </CardDescription>
+          </Card>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="border-t py-8 px-6">
+        <div className="max-w-7xl mx-auto flex justify-between items-center text-sm text-muted-foreground font-semibold">
+          <p>© 2026 Prompter Studio. All tools in one place.</p>
+          <div className="flex gap-4">
+            <a href="#" className="hover:text-primary transition-colors">Documentation</a>
+            <a href="#" className="hover:text-primary transition-colors">Github</a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
