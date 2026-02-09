@@ -37,6 +37,11 @@ if not exist "out\" (
 )
 echo Build output found!
 
+rem Create .nojekyll file for GitHub Pages
+echo [4.5/7] Creating .nojekyll file...
+type nul > out\.nojekyll
+echo .nojekyll file created!
+
 rem Stage and commit changes
 echo [5/7] Staging and committing files...
 git add .

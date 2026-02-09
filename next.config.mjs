@@ -2,7 +2,8 @@
 const nextConfig = {
     output: 'export',
     basePath: '/prompt-editor',
-    assetPrefix: '/prompt-editor',  // Remove the trailing slash
+    assetPrefix: '/prompt-editor',
+    trailingSlash: true,
     images: {
         unoptimized: true,
     },
